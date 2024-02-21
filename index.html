@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <title>Pião da Weekly</title>
+  <style type="text/css" media="screen">
+    html {
+      height:100%;
+      background-color: white;
+      overflow: hidden;
+    }
+
+    body {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    #wrapper {
+      width: 400px;
+      height: 400px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      margin-left: -200px;
+      margin-top: -200px;
+      transform-style: preserve-3d;
+      background-color: #222;
+
+    }
+
+    #piao {
+      position: relative;
+      top: 30px;
+      margin: 0 auto; /* centraliza o pião */
+      height: 330px;
+      width: 200px;
+      transform-style: preserve-3d;
+    }
+
+/**/
+    @keyframes rodando {
+      from { transform: rotateY(0); }
+      to   { transform: rotateY(-360deg); }
+    }
+    #piao.rodando {
+      animation: rodando 4s infinite linear;
+    }
+/*
+    #piao.rodando2 {
+      animation: rodando 2s infinite linear;
+    }
+
+    #piao.rodandoFim {
+      animation: rodando 10s linear 0s 2;
+    }
+*/
+    #piao .opcao {
+      position: absolute;
+      height: 100%;
+      width: 200px;
+      border: 6px solid white;
+      text-align: center;
+      line-height: 190px;
+      font-family: Impact, sans-serif;
+      font-size: 70px;
+      color: white;
+      background-color: rgb(0, 0, 0);
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      writing-mode: vertical-rl;
+    }
+
+    #moldura {
+      z-index: 30;
+      height: 400px;
+      width: 400px;
+      border: 50px solid rgb(200, 0, 0);
+      border-radius: 250px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-top: -250px;
+      margin-left: -250px;
+      transform: translateZ(400px);
+      /*
+        1ª shadow: simula 3D no elemento, na parte interna
+        2ª shadow: shadow interna para simular profundidade
+        3ª shadow: simula 3D no elemento, na parte externa
+        4ª shadow: shadow externa para simular profundidade
+      */
+      box-shadow:
+        inset -1px -2px 0px 3px rgb(150, 0, 0),
+        inset -1px -2px 10px 10px rgba(0, 0, 0, 0.5),
+        -2px -2px 0px 3px rgb(150, 0, 0),
+        -4px -4px 10px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    #decoracao {
+      width: 10000px;
+      height: 100%;
+      left: -5000px;
+      margin: 0 50%;
+      position: absolute;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    #decoracao > div {
+      width: 48%;
+      height: 50px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      border-top: 2px solid rgba(0, 0, 0, 0.7);
+      background-color: white;
+      float:left;
+      transform-origin: top left;
+    }
+
+    #play {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      background-color: whiteSmoke;
+      background-image: -webkit-linear-gradient(top, white, #DDD);
+      background-image: -moz-linear-gradient(top, white, #DDD);
+      background-image: linear-gradient(top, white, #DDD);
+      border-radius: 40px;
+      box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 0px 10px;
+      color: #333;
+      font-size: 40px;
+      line-height: 72px;
+      width: 68px;
+      height: 70px;
+      text-align: center;
+      text-decoration: none;
+      text-shadow: rgba(255, 255, 255, 0.746094) 0px 1px 1px;
+      padding-left: 2px;
+      -webkit-transition: box-shadow 0.3s linear;
+      -moz-transition: box-shadow 0.3s linear;
+      transition: box-shadow 0.3s linear;
+    }
+
+    #play:hover {
+      box-shadow: 0 0 0px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    .winner {
+      position: absolute;
+      border: 5px solid white;
+      padding: 50px;
+      top: 30%;
+      left: 32%;
+      z-index: 1000;
+      display: flow;
+      background-color: black;
+      color: white;
+      font-family: Impact, sans-serif;
+      font-size: 100px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <!-- moldura vermelha -->
+  <div id="moldura"></div>
+
+  <div id="wrapper">
+    <div id="piao"></div>
+  </div>
+
+  <!-- botão para dar pause/play na música de fundo -->
+  <a href="" id="play" style="z-index: 100">▶</a>
+  <!--
+    gambiarra para gerar o background
+    aqui novamente, se alguém souber um jeito mais limpo com apenas código, favor dar um pull request =)
+  -->
+  <div id="decoracao" style="z-index: 10"></div>
+</div>
+<!-- CLÁSSICA música do Pião da Casa Própria, máááá ôê -->
+<audio id="soundtrack" preload="auto" loop="false" src="soundtrack.mp3"/>
+<audio id="applause" preload="auto" loop="false" src="applause.mp3" />
+
+<script type="text/javascript">
+  piao = document.getElementById("piao");
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const myNames = urlParams.get('names');
+
+  console.log(myNames);
+ 
+  if (myNames) {
+    names = myNames.split(",");
+  } else {
+    names = [
+      "Kati",
+      "Haus",
+      "Leo",  
+      "Cartaxo", 
+      "Max", 
+      "Lohana",
+      "Pablo",
+      "Paulo", 
+      "Vitor",
+      "Fernanda",
+      "Henrique", 
+      "Carina",
+      "Sthael"
+    ];
+  }
+  slice = 360 / names.length;
+  m = 100 / Math.tan(slice * Math.PI / 360);
+  console.log("Slice " + slice + " m " + m);
+  for (var i = 0; i < names.length; i++) {
+    var opt = document.createElement("DIV");
+    var deg = slice * i;
+    opt.className = "opcao";
+    opt.style = "transform:rotateY(" + deg + "deg) translateZ(" + m + "px)";
+    opt.innerHTML = names[i];
+    piao.appendChild(opt);
+  }
+
+  decoracao = document.getElementById("decoracao");
+  for (var i = 0; i < 60; i++) {
+    var opt = document.createElement("DIV");
+    opt.style = "transform:rotate(" + (6 * i) + "deg) translate(200px)";
+    decoracao.appendChild(opt);
+  }
+  var opt = document.createElement("DIV");
+  opt.style = "height:5px; transform:translate(200px)";
+  decoracao.appendChild(opt);
+
+  var soundtrack = document.getElementById("soundtrack");
+  var applause = document.getElementById("applause");
+  var playButton = document.getElementById("play");
+
+  var animating = false;
+
+  playButton.addEventListener('click', function(event) {
+    event.preventDefault()
+    if (!animating) {
+      animating = true;
+      playButton.style = "display:none;visibility:hidden";
+      soundtrack.play()
+      window.requestAnimationFrame(fullRotation);
+    }
+  });
+
+  var rotation = 0;
+  var random = (3 + Math.random() * names.length) * 1000;
+  console.log("Random " + random);
+  var start;
+  function fullRotation(ts) {
+    if (!start) {
+      start = ts;
+    }
+    piao.style.transform = "rotateY(" + rotation + "deg)";
+    rotation -= 3;
+    if (rotation <= -360) {
+      rotation = 0;
+    }
+
+    if (ts - start < random) {
+      window.requestAnimationFrame(fullRotation);
+    } else {
+      console.log("Stopping");
+      window.requestAnimationFrame(stopRotation);
+    }
+  }
+
+  var dec = 3;
+  function stopRotation(ts) {
+    piao.style.transform = "rotateY(" + rotation + "deg)";
+    rotation -= dec;
+    if (rotation <= -360) {
+      rotation = 0;
+    }
+    dec -= 0.01;
+    console.log("Rotation " + rotation + " " + (rotation % slice));
+    if (dec <= 0.2 && (rotation % slice) < -2) {
+      dec = 0.1;
+    }
+    if (dec > 0) {
+      window.requestAnimationFrame(stopRotation);
+    } else {
+      var win = Math.floor(-rotation / slice)
+      console.log("Winner " + win + " " + names[win]);
+      soundtrack.pause();
+      applause.play();
+      var winner = document.createElement("DIV");
+      winner.innerHTML = "Parabéns<br>" + names[win];
+      winner.className = "winner";
+      document.body.appendChild(winner);
+      setTimeout(function () {applause.pause()}, 6000);
+    }
+  }
+
+  </script>
+</body>
+</html>
