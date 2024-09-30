@@ -40,7 +40,6 @@
       transform-style: preserve-3d;
     }
 
-/**/
     @keyframes rodando {
       from { transform: rotateY(0); }
       to   { transform: rotateY(-360deg); }
@@ -48,15 +47,7 @@
     #piao.rodando {
       animation: rodando 4s infinite linear;
     }
-/*
-    #piao.rodando2 {
-      animation: rodando 2s infinite linear;
-    }
 
-    #piao.rodandoFim {
-      animation: rodando 10s linear 0s 2;
-    }
-*/
     #piao .opcao {
       position: absolute;
       height: 100%;
@@ -100,24 +91,45 @@
     }
 
     #decoracao {
-      width: 10000px;
+      width: 100%;
       height: 100%;
-      left: -5000px;
+      left: -50%;
       margin: 0 50%;
       position: absolute;
-      z-index: -1;
+      z-index: 10;
       overflow: hidden;
     }
 
-    #decoracao > div {
+    #bgdir {
+      background-color: white;
+      position: absolute;
+      height: 100%;
       width: 48%;
-      height: 50px;
+      top: 0;
+      left: 50%;
+      transform: translate(200px);
+      transform-origin: top left;
+    }
+
+    #bgesq {
+      background-color: white;
+      position: absolute;
+      height: 100%;
+      width: 48%;
+      top: 0;
+      left: 50%;
+      transform: rotate(180deg) translate(200px);
+      transform-origin: center left;
+      }
+
+    .decdiv {
+      width: 48%;
+      height: 26px;
       position: absolute;
       top: 50%;
       left: 50%;
       border-top: 2px solid rgba(0, 0, 0, 0.7);
       background-color: white;
-      float:left;
       transform-origin: top left;
     }
 
@@ -125,6 +137,7 @@
       position: absolute;
       right: 20px;
       top: 20px;
+      z-index: 100;
       background-color: whiteSmoke;
       background-image: -webkit-linear-gradient(top, white, #DDD);
       background-image: -moz-linear-gradient(top, white, #DDD);
@@ -150,13 +163,14 @@
     }
 
     .winner {
-      position: absolute;
+      position: fixed;
+      inset: 0px;
+      height: 250px;
+      width: 600px;
+      margin: auto;
       border: 5px solid white;
       padding: 50px;
-      top: 30%;
-      left: 32%;
       z-index: 1000;
-      display: flow;
       background-color: black;
       color: white;
       font-family: Impact, sans-serif;
@@ -174,12 +188,12 @@
   </div>
 
   <!-- botão para dar pause/play na música de fundo -->
-  <a href="" id="play" style="z-index: 100">▶</a>
-  <!--
-    gambiarra para gerar o background
-    aqui novamente, se alguém souber um jeito mais limpo com apenas código, favor dar um pull request =)
-  -->
-  <div id="decoracao" style="z-index: 10"></div>
+  <a href="" id="play">▶</a>
+  <!-- background -->
+  <div id="decoracao">
+    <div id="bgdir"></div>
+    <div id="bgesq"></div>
+  </div>
 </div>
 <!-- CLÁSSICA música do Pião da Casa Própria, máááá ôê -->
 <audio id="soundtrack" preload="auto" loop="false" src="soundtrack.mp3"/>
@@ -196,41 +210,38 @@
   if (myNames) {
     names = myNames.split(",");
   } else {
+  //https://calm-field-0e074cc10.4.azurestaticapps.net/?names=Leo,Kati,Haus,Paulo,Yasmin,Tami,Cartaxo,Brunner,Luiz,Kleber,Tome,Alencar,Alejandro,Lohana,Fernanda,Henrique,Max,Michael,Sharivan
     names = [
-      "Kati",
-      "Haus",
-      "Leo",  
-      "Cartaxo", 
-      "Max", 
-      "Lohana",
-      "Pablo",
-      "Paulo", 
-      "Vitor",
-      "Fernanda",
-      "Henrique", 
-      "Carina",
-      "Sthael"
+      "Pessoa 1",
+      "Pessoa 2",
+      "Pessoa 3",  
+      "Pessoa 4" 
     ];
   }
+
+  // monta piao (poliedro com faces equidistantes)
   slice = 360 / names.length;
-  m = 100 / Math.tan(slice * Math.PI / 360);
-  console.log("Slice " + slice + " m " + m);
+  distance = 100 / Math.tan(slice * Math.PI / 360);
+  console.log("Slice " + slice + " distance " + distance);
   for (var i = 0; i < names.length; i++) {
     var opt = document.createElement("DIV");
     var deg = slice * i;
     opt.className = "opcao";
-    opt.style = "transform:rotateY(" + deg + "deg) translateZ(" + m + "px)";
+    opt.style = "transform:rotateY(" + deg + "deg) translateZ(" + distance + "px)";
     opt.innerHTML = names[i];
     piao.appendChild(opt);
   }
 
+  // monta background (fundo branco raiado)
   decoracao = document.getElementById("decoracao");
   for (var i = 0; i < 60; i++) {
     var opt = document.createElement("DIV");
+    opt.className = "decdiv";
     opt.style = "transform:rotate(" + (6 * i) + "deg) translate(200px)";
     decoracao.appendChild(opt);
   }
   var opt = document.createElement("DIV");
+  opt.className = "decdiv";
   opt.style = "height:5px; transform:translate(200px)";
   decoracao.appendChild(opt);
 
